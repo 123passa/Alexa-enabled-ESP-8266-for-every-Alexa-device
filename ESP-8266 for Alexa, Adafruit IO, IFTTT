@@ -1,0 +1,120 @@
+#include <ESP8266WiFi.h>
+#include "Adafruit_MQTT.h"
+#include "Adafruit_MQTT_Client.h"
+#define WIFI_SSID "YOUR WIFI NAME"
+#define WIFI_PASS "YOUR WIFI PASSWORD"
+#define MQTT_SERV "io.adafruit.com"
+#define MQTT_PORT 1883
+#define MQTT_NAME "NAME ON ADAFRUIT IO"
+#define MQTT_PASS "CODE ADAFRUIT IO"
+
+WiFiClient client;
+Adafruit_MQTT_Client mqtt(&client, MQTT_SERV, MQTT_PORT, MQTT_NAME, MQTT_PASS);
+Adafruit_MQTT_Subscribe onoff = Adafruit_MQTT_Subscribe(&mqtt, MQTT_NAME "/f/onoff");
+void setup()
+{
+  Serial.begin(9600);
+
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+  }
+  mqtt.subscribe(&onoff);
+  pinMode(5, OUTPUT);
+}
+void loop()
+{
+  MQTT_connect();
+
+  Adafruit_MQTT_Subscribe * subscription;
+  while (subscription = mqtt.readSubscription(5000))
+  {
+    if (subscription == &onoff)
+    {
+      if (!strcmp((char*) onoff.lastread, "ON"))
+      {
+        digitalWrite(5, HIGH);
+      }
+      if (!strcmp((char*) onoff.lastread, "OFF"))
+      {
+        digitalWrite(5, LOW);
+      }
+      while (!strcmp((char*) onoff.lastread, "BLINK"))
+      {
+        digitalWrite(5, HIGH);
+        delay(250);
+        digitalWrite(5, LOW);
+        delay(250);
+        digitalWrite(5, HIGH);
+        delay(250);
+        digitalWrite(5, LOW);
+        delay(250);
+        digitalWrite(5, HIGH);
+        delay(250);
+        digitalWrite(5, LOW);
+        delay(250);
+        digitalWrite(5, HIGH);
+        delay(250);
+        digitalWrite(5, LOW);
+        delay(250);
+
+        if (!strcmp((char*) onoff.lastread, "OFF")) {
+          break;
+        }
+      }
+    }
+  }
+  if (!mqtt.ping())
+  {
+    mqtt.disconnect();
+  }
+}
+
+
+/***************************************************
+  Adafruit MQTT Library ESP8266 Example
+
+  Must use ESP8266 Arduino from:
+    https://github.com/esp8266/Arduino
+
+  Works great with Adafruit's Huzzah ESP board & Feather
+  ----> https://www.adafruit.com/product/2471
+  ----> https://www.adafruit.com/products/2821
+
+  Adafruit invests time and resources providing this open source code,
+  please support Adafruit and open-source hardware by purchasing
+  products from Adafruit!
+
+  Written by Tony DiCola for Adafruit Industries.
+  MIT license, all text above must be included in any redistribution
+ ****************************************************/
+
+void MQTT_connect()
+{
+  int8_t ret;
+
+  // Stop if already connected.
+  if (mqtt.connected())
+  {
+    return;
+  }
+
+  Serial.print("Connecting to MQTT... ");
+
+  uint8_t retries = 3;
+  while ((ret = mqtt.connect()) != 0) // connect will return 0 for connected
+  {
+    Serial.println(mqtt.connectErrorString(ret));
+    Serial.println("Retrying MQTT connection in 5 seconds...");
+    mqtt.disconnect();
+    delay(5000);  // wait 5 seconds
+    retries--;
+    if (retries == 0)
+    {
+      // basically die and wait for WDT to reset me
+      while (1);
+    }
+  }
+  Serial.println("MQTT Connected!");
+}
