@@ -2,7 +2,7 @@
 This code will help you creating a smart home accessory starting from an ESP-8266 usualy commercialized as NodeMcu. 
 
 
-The code is a modification of the one in this guide https://www.instructables.com/id/Control-Your-Projects-With-Google-Assistant-and-Ad/
+The code is a reiteration of the one in this guide https://www.instructables.com/id/Control-Your-Projects-With-Google-Assistant-and-Ad/
 
 
 The guide is meant to be for super noobs in order to help you out if you have a Sonos or an echo after the first generation.
