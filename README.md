@@ -7,12 +7,12 @@ The guide above and my reiteration is meant to be for super noobs in order to he
 
 What I  suggest you is to follow almost everything in the guide linked above. You should modify few things and use the code I provide you.
 
-The pints of the guide that needs to be modified are the following:
+The points of the guide that needs to be modified are the following:
 
 1. Instead of adding a switch add a text block
 2. Load the code I provided you into the ESP and change the following:
    
-   #define WIFI_SSID "HERE ADD YOUR WIFI NAMe"  
+   #define WIFI_SSID "HERE ADD YOUR WIFI NAME"  
    
    #define WIFI_PASS "HERE ADD YOUR WIFI PASSWORD"  
    
